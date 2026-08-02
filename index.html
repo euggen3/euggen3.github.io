@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>euggen3</title>
+    <!-- Inter & Space Mono fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base Reset & Variables */
+        :root {
+            --bg-color: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #555555;
+            --text-muted: #888888;
+            --glow-color: rgba(100, 100, 100, 0.3);
+            --ripple-color: rgba(120, 120, 120, 0.4);
+            --accent-glow: rgba(150, 150, 150, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Space Mono', monospace;
+            color: var(--text-primary);
+            cursor: none; /* Custom cursor */
+        }
+
+        /* Canvas Background */
+        #background-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* App Container */
+        .app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4rem 2rem;
+        }
+
+        /* Header Logo */
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo .euggen {
+            color: var(--text-primary);
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+        }
+
+        .logo .gen3 {
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-left: 0.1rem;
+            position: relative;
+            text-shadow: 0 0 12px var(--glow-color);
+            animation: textGlowPulse 4s infinite ease-in-out;
+        }
+
+        @keyframes textGlowPulse {
+            0%, 100% {
+                text-shadow: 0 0 8px var(--glow-color), 0 0 2px var(--glow-color);
+                color: #444444;
+            }
+            50% {
+                text-shadow: 0 0 18px var(--accent-glow), 0 0 4px var(--accent-glow);
+                color: #222222;
+            }
+        }
+
+        /* Main Content Block */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            margin: auto;
+            z-index: 5;
+        }
+
+        /* Slogan */
+        .slogan {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2rem, 5vw, 4.5rem);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            text-shadow: 0px 4px 12px rgba(255, 255, 255, 0.9);
+            position: relative;
+        }
+
+        /* Subtitle */
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.7rem, 1.5vw, 0.95rem);
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            color: #111111;
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+            opacity: 0.9;
+            line-height: 1.5;
+            text-shadow: 0px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Interactive Sliders Section */
+        .sliders-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            position: relative;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .slider-value {
+            color: var(--text-secondary);
+        }
+
+        /* Custom Slider Styling */
+        .slider-track-container {
+            position: relative;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .slider-track {
+            width: 100%;
+            height: 1px;
+            background: #cccccc;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .slider-track-container:hover .slider-track {
+            background: #888888;
+        }
+
+        .slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: #222222;
+            width: 50%;
+        }
+
+        /* Custom Thumb (Active Node with Ripple) */
+        .slider-thumb-node {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(calc(1 + var(--cursor-dist-factor, 0) * 0.45));
+            width: 14px;
+            height: 14px;
+            background: #000000;
+            border-radius: 50%;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 calc(6px + var(--cursor-dist-factor, 0) * 12px) rgba(100, 100, 100, calc(0.3 + var(--cursor-dist-factor, 0) * 0.4));
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Center Dot/Crosshair mark */
+        .slider-thumb-node::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        /* Crosshair Hair Lines */
+        .crosshair-line {
+            position: absolute;
+            background: rgba(0, 0, 0, calc(0.25 + var(--cursor-dist-factor, 0) * 0.65));
+            pointer-events: none;
+            transition: background-color 0.2s;
+            z-index: 1;
+        }
+
+        .crosshair-h {
+            width: calc(24px + var(--cursor-dist-factor, 0) * 20px);
+            height: 1px;
+        }
+
+        .crosshair-v {
+            width: 1px;
+            height: calc(24px + var(--cursor-dist-factor, 0) * 20px);
+        }
+
+        /* Pulsating ripple rings (Target-like) */
+        .ripple-ring {
+            position: absolute;
+            border: 1px solid rgba(100, 100, 100, calc(0.25 + var(--cursor-dist-factor, 0) * 0.45));
+            border-radius: 50%;
+            pointer-events: none;
+            animation: ripple-pulse calc(3.5s - var(--cursor-dist-factor, 0) * 2s) infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+            opacity: 0;
+            z-index: 0;
+        }
+
+        .ripple-ring-1 {
+            width: 32px;
+            height: 32px;
+            animation-delay: 0s;
+        }
+
+        .ripple-ring-2 {
+            width: 54px;
+            height: 54px;
+            animation-delay: 0.8s;
+        }
+
+        .ripple-ring-3 {
+            width: 76px;
+            height: 76px;
+            animation-delay: 1.6s;
+            border-style: dashed;
+        }
+
+        @keyframes ripple-pulse {
+            0% {
+                transform: scale(0.3);
+                opacity: 0.85;
+                border-color: rgba(50, 50, 50, 0.7);
+            }
+            50% {
+                border-color: rgba(120, 120, 120, 0.45);
+            }
+            100% {
+                transform: scale(2.0);
+                opacity: 0;
+                border-color: rgba(220, 220, 220, 0);
+            }
+        }
+
+        /* Footer links */
+        footer {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .footer-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            position: relative;
+            cursor: pointer;
+            filter: url(#liquid-filter); /* Distort filter */
+            transition: color 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-link:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Glowing gray ripple behind hovered footer link */
+        .footer-link::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 70px;
+            height: 70px;
+            border: 1px solid rgba(120, 120, 120, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.5s;
+            z-index: -1;
+            box-shadow: 0 0 12px rgba(120, 120, 120, 0.15);
+        }
+
+        .footer-link:hover::before {
+            animation: footer-link-ripple 1.5s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+
+        @keyframes footer-link-ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0.4);
+                opacity: 0.9;
+                border-color: rgba(80, 80, 80, 0.5);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.6);
+                opacity: 0;
+                border-color: rgba(220, 220, 220, 0);
+            }
+        }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            background-color: #000000;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.25s ease, height 0.25s ease, background-color 0.25s ease;
+        }
+
+        #custom-cursor.hovered {
+            width: 12px;
+            height: 12px;
+            background-color: #ffffff;
+        }
+
+        #custom-cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid #000000;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.25s cubic-bezier(0.25, 1, 0.5, 1), height 0.25s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.25s ease, border-style 0.25s ease;
+        }
+
+        #custom-cursor-ring.hovered {
+            width: 56px;
+            height: 56px;
+            border-color: #ffffff;
+            border-style: dashed;
+            animation: cursor-ring-spin 8s linear infinite;
+        }
+
+        @keyframes cursor-ring-spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Cursor Click ripple layer */
+        .cursor-ripple {
+            position: fixed;
+            border: 1px solid #555555;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9997;
+            transform: translate(-50%, -50%);
+            animation: cursor-click-ripple 0.75s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
+            mix-blend-mode: difference;
+        }
+
+        @keyframes cursor-click-ripple {
+            0% {
+                width: 0px;
+                height: 0px;
+                opacity: 1;
+                border-color: #000000;
+            }
+            100% {
+                width: 120px;
+                height: 120px;
+                opacity: 0;
+                border-color: #888888;
+            }
+        }
+
+        /* Utilities */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 2rem 1rem;
+            }
+            .logo {
+                font-size: 2.5rem;
+            }
+            .slogan {
+                font-size: 2.2rem;
+                margin-bottom: 1rem;
+            }
+            .subtitle {
+                letter-spacing: 0.15em;
+                margin-bottom: 2.5rem;
+            }
+            .sliders-container {
+                gap: 1.5rem;
+                padding: 1.2rem;
+            }
+            .footer-links {
+                gap: 1.5rem;
+                flex-direction: column;
+            }
+            #custom-cursor, #custom-cursor-ring {
+                display: none; /* Hide on touch screens */
+            }
+            body {
+                cursor: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG Filters for Liquid Distortion -->
+    <svg class="visually-hidden">
+        <defs>
+            <filter id="liquid-filter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="1" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" id="liquid-displacement" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Canvas Background visualization -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- App Content Layout -->
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo" id="main-logo">
+                <span class="euggen">eug</span><span class="gen3">gen3</span>
+            </div>
+        </header>
+
+        <!-- Main section -->
+        <main>
+            <h1 class="slogan">ДОХУЯ ЗАДУМАНО - НИХУЯ НЕ СДЕЛАНО</h1>
+            <p class="subtitle">ТОТАЛ ПЕРФЕКШИОН НОУ МУВМЕНТ</p>
+
+            <!-- Sliders -->
+            <div class="sliders-container">
+                <!-- DOUBT Slider -->
+                <div class="slider-wrapper" id="doubt-slider-wrapper">
+                    <div class="slider-header">
+                        <span>THINKING</span>
+                        <span class="slider-value" id="doubt-value">85%</span>
+                    </div>
+                    <div class="slider-track-container" id="doubt-track-container" data-slider="doubt">
+                        <div class="slider-track">
+                            <div class="slider-fill" id="doubt-fill" style="width: 85%;"></div>
+                            <div class="slider-thumb-node" id="doubt-thumb" style="left: 85%;">
+                                <div class="crosshair-line crosshair-h"></div>
+                                <div class="crosshair-line crosshair-v"></div>
+                                <div class="ripple-ring ripple-ring-1"></div>
+                                <div class="ripple-ring ripple-ring-2"></div>
+                                <div class="ripple-ring ripple-ring-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTION Slider -->
+                <div class="slider-wrapper" id="action-slider-wrapper">
+                    <div class="slider-header">
+                        <span>ACTION</span>
+                        <span class="slider-value" id="action-value">15%</span>
+                    </div>
+                    <div class="slider-track-container" id="action-track-container" data-slider="action">
+                        <div class="slider-track">
+                            <div class="slider-fill" id="action-fill" style="width: 15%;"></div>
+                            <div class="slider-thumb-node" id="action-thumb" style="left: 15%;">
+                                <div class="crosshair-line crosshair-h"></div>
+                                <div class="crosshair-line crosshair-v"></div>
+                                <div class="ripple-ring ripple-ring-1"></div>
+                                <div class="ripple-ring ripple-ring-2"></div>
+                                <div class="ripple-ring ripple-ring-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <ul class="footer-links">
+                <li><a class="footer-link" href="#works">WORKS</a></li>
+                <li><a class="footer-link" href="#about">ABOUT</a></li>
+                <li><a class="footer-link" href="#contact">CONTACT</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <!-- Custom Cursor elements -->
+    <div id="custom-cursor"></div>
+    <div id="custom-cursor-ring"></div>
+
+    <script>
+        // State variables
+        const sliders = {
+            doubt: 85,
+            action: 15
+        };
+
+        const mouse = { x: null, y: null };
+        const cursor = { x: 0, y: 0 };
+        const ring = { x: 0, y: 0 };
+
+        // Canvas Setup
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        const dpr = window.devicePixelRatio || 1;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Background Entities
+        // 1. Nodes
+        class Node {
+            constructor() {
+                this.reset(true);
+            }
+            reset(init = false) {
+                this.x = Math.random() * width;
+                this.y = init ? Math.random() * height : (Math.random() > 0.5 ? -10 : height + 10);
+                this.baseVx = (Math.random() - 0.5) * 0.25;
+                this.baseVy = (Math.random() - 0.5) * 0.25;
+                this.vx = this.baseVx;
+                this.vy = this.baseVy;
+                this.radius = Math.random() * 1.5 + 1;
+                this.alpha = Math.random() * 0.25 + 0.15;
+            }
+            update() {
+                const doubtFactor = sliders.doubt / 100;
+                const actionFactor = sliders.action / 100;
+
+                const jitter = doubtFactor * 0.35;
+                this.vx = this.baseVx * (1 + actionFactor * 1.8) + (Math.random() - 0.5) * jitter;
+                this.vy = this.baseVy * (1 + actionFactor * 1.8) + (Math.random() - 0.5) * jitter;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (mouse.x !== null) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 180) {
+                        const force = (180 - dist) / 180 * 0.04 * (actionFactor + 0.2);
+                        this.x += (dx / dist) * force * 15;
+                        this.y += (dy / dist) * force * 15;
+                    }
+                }
+
+                if (this.x < -30 || this.x > width + 30 || this.y < -30 || this.y > height + 30) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 0, 0, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        // 2. Floating Code Snippets
+        const codePool = [
+// --- Фразы сомнения ---
+    "а у меня получится?",
+    "что если это слишком сложно?",
+    "а какой вообще смысл?",
+    "вокруг лишь бесконечный холодный вакуум",
+    "мы всего лишь пылинки на бледно-голубой точке",
+    "шум в радиоэфире вместо ответов",
+    "сигнал потерян в межзвездном пространстве",
+    "преодолеть земное притяжение невозможно",
+    "падать всегда легче, чем набирать высоту",
+    "стоит ли игра свеч, когда масштаб предрешен?",
+    "борьба с энтропией Вселенной",
+    "через тернии к самым дальним звёздам",
+    "преодолеть вторую космическую скорость и вырваться вперед",
+    "даже после самого опасного маневра возможна идеальная посадка",
+    "сжигать топливо сомнений ради увеличения тяги",
+    "рассчитать траекторию сквозь любой хаос",
+    "каждый отказ системы — это шаг к успешному запуску",
+    "смотреть вверх, а не под ноги",
+    "пробивать плотные слои атмосферного сопротивления",
+    "стать первопроходцем на неизведанной орбите"
+        ];
+
+        class CodeSnippet {
+            constructor() {
+                this.reset(true);
+            }
+            reset(init = false) {
+                this.text = codePool[Math.floor(Math.random() * codePool.length)];
+                this.x = Math.random() * width;
+                this.y = init ? Math.random() * height : height + 30;
+                this.vy = -(Math.random() * 0.25 + 0.08);
+                this.vx = (Math.random() - 0.5) * 0.1;
+                this.fontSize = Math.floor(Math.random() * 4) + 9;
+                this.alpha = Math.random() * 0.15 + 0.04;
+            }
+            update() {
+                const actionFactor = sliders.action / 100;
+                this.y += this.vy * (1 + actionFactor * 1.5);
+                this.x += this.vx;
+
+                if (mouse.x !== null) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        this.x += (dx / dist) * 0.15;
+                    }
+                }
+
+                if (this.y < -40 || this.x < -100 || this.x > width + 100) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.font = `${this.fontSize}px 'Space Mono', monospace`;
+                const actionFactor = sliders.action / 100;
+                const finalAlpha = Math.min(0.4, this.alpha * (1 + actionFactor * 0.6));
+                ctx.fillStyle = `rgba(85, 85, 85, ${finalAlpha})`;
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        // 3. ASCII Fragment
+        const asciiPool = [
+            "EFEEEE00E00", "0x7F4B2", "[REBEL]", "0011.AA", "[CHAOS]", "VISIONARY", "A3F900E",
+            "C_O_D_E", "0xCAFEBABE", "SYS_INIT", "EUG3", "77A9B2", "[]", "::", "||--||"
+        ];
+
+        class AsciiFragment {
+            constructor() {
+                this.reset(true);
+            }
+            reset(init = false) {
+                this.text = asciiPool[Math.floor(Math.random() * asciiPool.length)];
+                this.x = init ? Math.random() * width : -120;
+                this.y = Math.random() * height;
+                this.vx = Math.random() * 0.35 + 0.08;
+                this.vy = (Math.random() - 0.5) * 0.04;
+                this.fontSize = Math.floor(Math.random() * 3) + 10;
+                this.alpha = Math.random() * 0.12 + 0.04;
+            }
+            update() {
+                const actionFactor = sliders.action / 100;
+                this.x += this.vx * (1 + actionFactor * 1.3);
+                this.y += this.vy;
+
+                if (this.x > width + 120) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.font = `${this.fontSize}px 'Space Mono', monospace`;
+                ctx.fillStyle = `rgba(136, 136, 136, ${this.alpha})`;
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        // 4. Binary Streams
+        class BinaryStream {
+            constructor() {
+                this.reset(true);
+            }
+            reset(init = false) {
+                this.x = Math.random() * width;
+                this.y = init ? Math.random() * height : -120;
+                this.speed = Math.random() * 1.2 + 0.4;
+                this.chars = [];
+                const len = Math.floor(Math.random() * 8) + 4;
+                for (let i = 0; i < len; i++) {
+                    this.chars.push(Math.random() > 0.5 ? "1" : "0");
+                }
+                this.alpha = Math.random() * 0.10 + 0.03;
+                this.fontSize = 11;
+                this.updateCounter = 0;
+            }
+            update() {
+                const actionFactor = sliders.action / 100;
+                this.y += this.speed * (1 + actionFactor * 1.5);
+                
+                this.updateCounter++;
+                if (this.updateCounter % 15 === 0) {
+                    const idx = Math.floor(Math.random() * this.chars.length);
+                    this.chars[idx] = this.chars[idx] === "1" ? "0" : "1";
+                }
+
+                if (this.y > height + 150) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.font = `${this.fontSize}px 'Space Mono', monospace`;
+                for (let i = 0; i < this.chars.length; i++) {
+                    const charAlpha = this.alpha * (i / this.chars.length);
+                    ctx.fillStyle = `rgba(0, 0, 0, ${charAlpha})`;
+                    ctx.fillText(this.chars[i], this.x, this.y - (i * this.fontSize * 1.2));
+                }
+            }
+        }
+
+        // Instantiate
+        const nodes = Array.from({ length: 50 }, () => new Node());
+        const snippets = Array.from({ length: 12 }, () => new CodeSnippet());
+        const asciis = Array.from({ length: 12 }, () => new AsciiFragment());
+        const binaries = Array.from({ length: 15 }, () => new BinaryStream());
+
+        function drawLines() {
+            const maxDist = 110;
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < maxDist) {
+                        const alpha = (1 - dist / maxDist) * 0.16 * (1 - (sliders.doubt / 250));
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
+                        ctx.lineWidth = 0.55;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Cursor elements & state
+        const cursorDot = document.getElementById('custom-cursor');
+        const cursorRing = document.getElementById('custom-cursor-ring');
+        
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+
+            // Compute distance factor to Doubt and Action thumbs
+            const thumbs = [
+                { id: 'doubt-thumb', element: document.getElementById('doubt-thumb') },
+                { id: 'action-thumb', element: document.getElementById('action-thumb') }
+            ];
+
+            thumbs.forEach(t => {
+                if (t.element) {
+                    const rect = t.element.getBoundingClientRect();
+                    const tx = rect.left + rect.width / 2;
+                    const ty = rect.top + rect.height / 2;
+                    const dx = e.clientX - tx;
+                    const dy = e.clientY - ty;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const maxDist = 220;
+                    const factor = Math.max(0, Math.min(1, (maxDist - dist) / maxDist));
+                    t.element.style.setProperty('--cursor-dist-factor', factor);
+                }
+            });
+        });
+
+        // Click Ripple
+        window.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'cursor-ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+        });
+
+        // Hover bindings
+        function bindHoverEvents() {
+            const interactiveElements = document.querySelectorAll('a, .logo, .slider-track-container');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorDot.classList.add('hovered');
+                    cursorRing.classList.add('hovered');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorDot.classList.remove('hovered');
+                    cursorRing.classList.remove('hovered');
+                });
+            });
+        }
+        bindHoverEvents();
+
+        // Liquid Distortion Hover state
+        const footerLinks = document.querySelectorAll('.footer-link');
+        let isHoveringLink = false;
+        let liquidScale = 0;
+        let targetLiquidScale = 0;
+        let liquidTime = 0;
+
+        footerLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                isHoveringLink = true;
+                targetLiquidScale = 22;
+            });
+            link.addEventListener('mouseleave', () => {
+                isHoveringLink = false;
+                targetLiquidScale = 0;
+            });
+        });
+
+        function updateLiquidFilter() {
+            liquidScale += (targetLiquidScale - liquidScale) * 0.12;
+            const displacement = document.getElementById('liquid-displacement');
+            const turbulence = document.querySelector('feTurbulence');
+            
+            if (displacement && turbulence) {
+                displacement.setAttribute('scale', liquidScale);
+                if (liquidScale > 0.5) {
+                    liquidTime += 0.12;
+                    const fx = 0.02 + Math.sin(liquidTime) * 0.005;
+                    const fy = 0.07 + Math.cos(liquidTime * 1.2) * 0.01;
+                    turbulence.setAttribute('baseFrequency', `${fx} ${fy}`);
+                    if (Math.random() < 0.22) {
+                        turbulence.setAttribute('seed', Math.floor(Math.random() * 100));
+                    }
+                }
+            }
+        }
+
+        // Sliders Interaction Code
+        function setupSlider(sliderId) {
+            const container = document.getElementById(`${sliderId}-track-container`);
+            const fill = document.getElementById(`${sliderId}-fill`);
+            const thumb = document.getElementById(`${sliderId}-thumb`);
+            const valueText = document.getElementById(`${sliderId}-value`);
+
+            if (!container) return;
+
+            let isDragging = false;
+
+            function updateValue(clientX) {
+                const rect = container.getBoundingClientRect();
+                let pct = (clientX - rect.left) / rect.width;
+                pct = Math.max(0, Math.min(1, pct));
+                const percentage = Math.round(pct * 100);
+
+                // Update state
+                sliders[sliderId] = percentage;
+
+                // Update DOM
+                fill.style.width = `${percentage}%`;
+                thumb.style.left = `${percentage}%`;
+                valueText.innerText = `${percentage}%`;
+            }
+
+            container.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                container.setPointerCapture(e.pointerId);
+                updateValue(e.clientX);
+            });
+
+            container.addEventListener('pointermove', (e) => {
+                if (isDragging) {
+                    updateValue(e.clientX);
+                }
+            });
+
+            container.addEventListener('pointerup', (e) => {
+                if (isDragging) {
+                    container.releasePointerCapture(e.pointerId);
+                    isDragging = false;
+                }
+            });
+        }
+
+        setupSlider('doubt');
+        setupSlider('action');
+
+        // Animation Loop
+        function tick() {
+            // Clear
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            // Update & Draw Background
+            binaries.forEach(b => { b.update(); b.draw(); });
+            asciis.forEach(a => { a.update(); a.draw(); });
+            drawLines();
+            nodes.forEach(n => { n.update(); n.draw(); });
+            snippets.forEach(s => { s.update(); s.draw(); });
+
+            // Smooth Cursor inertia (lerp)
+            if (mouse.x !== null && mouse.y !== null) {
+                cursor.x += (mouse.x - cursor.x) * 0.35;
+                cursor.y += (mouse.y - cursor.y) * 0.35;
+                cursorDot.style.left = `${cursor.x}px`;
+                cursorDot.style.top = `${cursor.y}px`;
+
+                ring.x += (mouse.x - ring.x) * 0.14;
+                ring.y += (mouse.y - ring.y) * 0.14;
+                cursorRing.style.left = `${ring.x}px`;
+                cursorRing.style.top = `${ring.y}px`;
+            }
+
+            // SVG liquid filter tick
+            updateLiquidFilter();
+
+            requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+    </script>
+</body>
+</html>
